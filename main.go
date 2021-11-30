@@ -14,8 +14,6 @@ import (
 )
 
 type Bank struct {
-	Code      int       `json:"code"`
-	Message   string    `json:"message"`
 	Name      string    `json:"bank"`
 	TimeStamp time.Time `json:"timestamp"`
 	Data      []Dataset `json:"data"`
@@ -26,6 +24,8 @@ type Dataset struct {
 	Buy      float32 `json:"buy"`
 	Sell     float32 `json:"sell"`
 }
+
+var bank Bank
 
 func normalize(str string) string {
 	return strings.Replace(str, ",", "", -1)
@@ -38,13 +38,13 @@ func normalizeDot(str string) string {
 func httpGet(targetUri string) (goquery.Document, error) {
 	res, err := http.Get(targetUri)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	return *doc, err
 }
@@ -52,16 +52,13 @@ func httpGet(targetUri string) (goquery.Document, error) {
 func getBCA() string {
 	doc, err := httpGet("https://www.bca.co.id/id/informasi/kurs")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	var bank Bank
-	bank.Code = 200
-	bank.Message = "success"
 	bank.Name = "BCA - Bank Central Asia"
 	bank.TimeStamp = time.Now()
-
 	rows := make([]Dataset, 0)
+
 	pageCounts := doc.Find(".m-table-kurs tbody tr")
 	pageCounts.Each(func(_ int, tr *goquery.Selection) {
 		td := new(Dataset)
@@ -80,16 +77,13 @@ func getBCA() string {
 func getBI() string {
 	doc, err := httpGet("https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	var bank Bank
-	bank.Code = 200
-	bank.Message = "success"
 	bank.Name = "BI - Bank Indonesia"
 	bank.TimeStamp = time.Now()
-
 	rows := make([]Dataset, 0)
+
 	pageCounts := doc.Find(".table-lg tbody tr")
 	pageCounts.Each(func(_ int, tr *goquery.Selection) {
 		td := new(Dataset)
@@ -108,15 +102,11 @@ func getBI() string {
 func getBNI() string {
 	doc, err := httpGet("https://www.bni.co.id/id-id/beranda/informasivalas")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	var bank Bank
-	bank.Code = 200
-	bank.Message = "success"
 	bank.Name = "BNI - Bank Negara Indonesia"
 	bank.TimeStamp = time.Now()
-
 	rows := make([]Dataset, 0)
 
 	pageCounts := doc.Find("#dnn_ctr3510_BNIValasInfoView_divBankNotes table tbody tr")
@@ -137,16 +127,13 @@ func getBNI() string {
 func getMEGA() string {
 	doc, err := httpGet("https://www.bankmega.com/id/bisnis/treasury/")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	var bank Bank
-	bank.Code = 200
-	bank.Message = "success"
 	bank.Name = "MEGA - Bank Mega"
 	bank.TimeStamp = time.Now()
-
 	rows := make([]Dataset, 0)
+
 	pageCounts := doc.Find("table tbody tr")
 	pageCounts.Each(func(_ int, tr *goquery.Selection) {
 		td := new(Dataset)
