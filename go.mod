@@ -1,4 +1,4 @@
-module cikaldev/my-project
+module cikaldev/go-scrap-kurs
 
 go 1.17
 
